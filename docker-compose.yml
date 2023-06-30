@@ -114,6 +114,7 @@ services:
     image: ${MDBVERSION}
     platform: ${PLATFORM}
     container_name: mongo1
+    hostname: mongo1
     command: --replSet rs0 --oplogSize 128
     volumes:
       - rs1:/data/db
@@ -122,6 +123,20 @@ services:
     ports:
       - "27017:27017"
     restart: always
+
+  # monitor (edited)
+  monitor:
+    platform: ${PLATFORM}
+    build:
+      context: .
+      dockerfile: Dockerfile-Monitor
+    container_name: monitor
+    hostname: monitor
+    # should wait for the last one
+    depends_on:
+      - rest-proxy
+    networks:
+      - localnet
 
 networks:
   localnet:

@@ -28,55 +28,55 @@ docker-compose exec mongo1 ${MDBSHELL} --eval '''rsconf = { _id : "rs0", members
 rs.initiate(rsconf);'''
 
 sleep 5
-
 echo "\nConfiguring Create Confluent License topic...\n"
+# Create the license topic. Without doing this, the mqtt-source connector is not going to work 
 docker-compose exec broker kafka-topics --create --topic "_confluent-command" --bootstrap-server broker:29092
 
+# sleeping longer to wait for the topics established in kafka broker
 sleep 60
-
 echo "\nLoad the mqtt-source connector...\n"
-curl --silent -X POST -H "Content-Type: application/json" -d @mqtt-source.json http://localhost:8083/connectors
+# execute in monitor container and use cx to create the connector
+docker-compose exec monitor cx mqtt-source.json
 
 sleep 5
-
 echo "\n\nLoad the mongodb-sink connector...\n"
-curl --silent -X POST -H "Content-Type: application/json" -d @mongodb-sink.json http://localhost:8083/connectors
+# execute in monitor container and use cx to create the connector
+docker-compose exec monitor cx mongodb-sink.json
 
-sleep 5
+# below are the original request from the local machine side. Instead of using the container called monitor.
+# echo "\nLoad the mqtt-source connector...\n"
+# curl --silent -X POST -H "Content-Type: application/json" -d @mqtt-source.json http://localhost:8083/connectors
 
-echo "\n\nKafka Connectors status:\n\n"
-curl -s "http://localhost:8083/connectors?expand=info&expand=status" | \
-           jq '. | to_entries[] | [ .value.info.type, .key, .value.status.connector.state,.value.status.tasks[].state,.value.info.config."connector.class"]|join(":|:")' | \
-           column -s : -t| sed 's/\"//g'| sort
+# sleep 5
 
-echo "\n\nVersion of MongoDB Connector for Apache Kafka installed:\n"
-curl --silent http://localhost:8083/connector-plugins | jq -c '.[] | select( .class == "com.mongodb.kafka.connect.MongoSourceConnector" or .class == "com.mongodb.kafka.connect.MongoSinkConnector" )'
-curl --silent http://localhost:8083/connector-plugins | jq -c '.[] | select( .class == "io.confluent.connect.mqtt.MqttSourceConnector" or .class == "io.confluent.connect.mqtt.MqttSinkConnector" )'
+# echo "\n\nLoad the mongodb-sink connector...\n"
+# curl --silent -X POST -H "Content-Type: application/json" -d @mongodb-sink.json http://localhost:8083/connectors
+
+# sleep 5
+
+# echo "\n\nKafka Connectors status:\n\n"
+# curl -s "http://localhost:8083/connectors?expand=info&expand=status" | \
+#            jq '. | to_entries[] | [ .value.info.type, .key, .value.status.connector.state,.value.status.tasks[].state,.value.info.config."connector.class"]|join(":|:")' | \
+#            column -s : -t| sed 's/\"//g'| sort
+
+# echo "\n\nVersion of MongoDB Connector for Apache Kafka installed:\n"
+# curl --silent http://localhost:8083/connector-plugins | jq -c '.[] | select( .class == "com.mongodb.kafka.connect.MongoSourceConnector" or .class == "com.mongodb.kafka.connect.MongoSinkConnector" )'
+# curl --silent http://localhost:8083/connector-plugins | jq -c '.[] | select( .class == "io.confluent.connect.mqtt.MqttSourceConnector" or .class == "io.confluent.connect.mqtt.MqttSinkConnector" )'
 
 echo '''
-
 ==============================================================================================================
-
 The following services are running:
 
 MongoDB on 27017
 Kafka Broker on 9092
 Kafka Zookeeper on 2181
 Kafka Connect on 8083
-
-Status of kafka connectors:
-sh status.sh
-
-To stop these serivces:
-docker-compose-down
-
-To stop and remove the MongoDB database volumes:
-docker-compose-down -v
-
-(Optional) A docker image is avaialble which includes MongoSH shell, KafkaCat, and various utilitiies:
-docker run --rm --name shell1 --network mongodb-kafka-base_localnet -it robwma/mongokafkatutorial:latest bash
-
 ==============================================================================================================
 '''
 
-docker run --rm --name shell1 --network remote_mqtt_kafka_mongodb_localnet -it robwma/mongokafkatutorial:latest bash
+echo "\n\nKafka Connectors status:\n\n"
+docker-compose exec monitor status
+
+# finally execute again the bash to make it to the foreground
+docker-compose exec monitor bash
+# docker run --rm --name shell1 --network remote_mqtt_kafka_mongodb_localnet -it robwma/mongokafkatutorial:latest bash
