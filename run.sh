@@ -24,8 +24,7 @@ sleep 5
 
 echo "\nConfiguring the MongoDB ReplicaSet...\n"
 # 5.0 and above we can use mongosh else we use the oild mongo shell
-docker-compose exec mongo1 ${MDBSHELL} --eval '''rsconf = { _id : "rs0", members: [ { _id : 0, host : "mongo1:27017", priority: 1.0 }]};
-rs.initiate(rsconf);'''
+docker-compose exec mongo1 ${MDBSHELL} --eval '''rsconf = { _id : "rs0", members: [ { _id : 0, host : "mongo1:27017", priority: 1.0 }]}; rs.initiate(rsconf);'''
 
 sleep 10
 echo "\nConfiguring Create Confluent License topic...\n"
