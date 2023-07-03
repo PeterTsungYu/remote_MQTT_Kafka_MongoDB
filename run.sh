@@ -27,10 +27,12 @@ echo "\nConfiguring the MongoDB ReplicaSet...\n"
 docker-compose exec mongo1 ${MDBSHELL} --eval '''rsconf = { _id : "rs0", members: [ { _id : 0, host : "mongo1:27017", priority: 1.0 }]};
 rs.initiate(rsconf);'''
 
-sleep 5
+sleep 10
 echo "\nConfiguring Create Confluent License topic...\n"
 # Create the license topic. Without doing this, the mqtt-source connector is not going to work 
 docker-compose exec broker kafka-topics --create --topic "_confluent-command" --bootstrap-server broker:29092
+docker-compose exec broker kafka-topics --create --topic "connect-offsets" --bootstrap-server broker:29092
+
 
 # sleeping longer to wait for the topics established in kafka broker
 sleep 60
