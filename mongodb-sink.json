@@ -5,10 +5,18 @@
 "topics":"test_topic",
 "connection.uri":"mongodb+srv://yoyo5022:6BL6ZGsEx7Gl4aIo@mongodb-001.d2er8mi.mongodb.net/database?retryWrites=true&w=majority",
 "database":"testing",
-"collection":"collection001",
+"collection":"timeseries",
 "key.converter":"org.apache.kafka.connect.storage.StringConverter",
 "value.converter":"org.apache.kafka.connect.json.JsonConverter",
 "value.converter.schemas.enable":"false",
 "consumer.auto.offset.reset": "latest",
-"offset.storage.topic": "connect-offsets"
+"offset.storage.topic": "connect-offsets",
+"timeseries.timefield":"timestamp",
+"timeseries.timefield.auto.convert":"true",
+"timeseries.timefield.auto.convert.date.format":"yyyy-MM-dd'T'HH:mm:ss'Z'",
+"transforms": "RenameField,InsertTopic",
+"transforms.RenameField.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+"transforms.RenameField.renames": "h:humidity, p:pressure, t:temperature",
+"transforms.InsertTopic.type":"org.apache.kafka.connect.transforms.InsertField$Value",
+"transforms.InsertTopic.topic.field":"Source_topic"
 }}
