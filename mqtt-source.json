@@ -2,10 +2,8 @@
 "config": {
 "connector.class": "io.confluent.connect.mqtt.MqttSourceConnector",
 "tasks.max": "1",
-"mqtt.server.uri": "ssl://824e9284a758481ea61c778e48e46681.s2.eu.hivemq.cloud:8883",
-"mqtt.username": "peter",
-"mqtt.password": "Peteryo121!@",
-"mqtt.topics": "i/ldr,i/bme680,i/cam",
+"mqtt.server.uri":  "tcp://remote-mqtt-broker:1883",
+"mqtt.topics": "test_topic",
 "kafka.topic": "test_topic",
 "value.converter":"org.apache.kafka.connect.converters.ByteArrayConverter",
 "confluent.topic.bootstrap.servers": "broker:29092",
