@@ -127,9 +127,10 @@ services:
   # monitor (edited)
   monitor:
     platform: ${PLATFORM}
+    # https://github.com/RWaltersMA/mongokafkatutorial.git
     build:
-      context: .
-      dockerfile: Dockerfile-Monitor
+      context: ./mongokafkatutorial
+      dockerfile: Dockerfile
     container_name: monitor
     hostname: monitor
     # should wait for the last one

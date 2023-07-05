@@ -34,7 +34,7 @@ docker-compose exec broker kafka-topics --create --topic "connect-offsets" --boo
 
 
 # sleeping longer to wait for the topics established in kafka broker
-sleep 60
+sleep 120
 echo "\nLoad the mqtt-source connector...\n"
 # execute in monitor container and use cx to create the connector
 docker-compose exec monitor cx mqtt-source.json

@@ -1,8 +1,0 @@
-FROM robwma/mongokafkatutorial:latest
-
-# Copy the connector files so that they are executable in the container
-COPY mongodb-sink.json .
-COPY mqtt-source.json .
-
-# CMD ["/bin/bash"]  # Runs bash in foreground
-CMD ["/bin/sh", "-c", "while true; do sleep 1; done"]  # Infinite loop
